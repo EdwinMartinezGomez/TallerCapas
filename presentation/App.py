@@ -1,6 +1,4 @@
 # capa_presentacion.py
-# Capa de Presentación: interacción con el usuario
-
 from business import AcademicManager
 
 def mostrar_menu():
@@ -11,12 +9,11 @@ def mostrar_menu():
     print("4. Listar estudiantes")
     print("5. Listar cursos")
     print("6. Listar matrículas")
-    print("7. Buscar estudiante por identificación")
     print("0. Salir")
 
 def main():
     gestor = AcademicManager()
-    
+
     while True:
         mostrar_menu()
         opcion = input("Seleccione una opción: ")
@@ -31,7 +28,7 @@ def main():
         elif opcion == "2":
             codigo = input("Código del curso: ")
             nombre = input("Nombre del curso: ")
-            creditos = int(input("Créditos: "))
+            creditos = input("Créditos: ")
             print(gestor.registrar_curso(codigo, nombre, creditos))
 
         elif opcion == "3":
@@ -40,31 +37,26 @@ def main():
             print(gestor.matricular_estudiante(id_est, cod_curso))
 
         elif opcion == "4":
-            print("\n Estudiantes registrados:")
+            print("\n Estudiantes:")
             for e in gestor.listar_estudiantes():
-                print(e)
+                print(f" - {e}")
 
         elif opcion == "5":
-            print("\n Cursos registrados:")
+            print("\n Cursos:")
             for c in gestor.listar_cursos():
-                print(c)
+                print(f" - {c}")
 
         elif opcion == "6":
-            print("\n Matrículas registradas:")
+            print("\n Matrículas:")
             for m in gestor.listar_matriculas():
-                print(m)
-
-        elif opcion == "7":
-            id_est = input("Ingrese identificación: ")
-            est = gestor.buscar_estudiante(id_est)
-            print(est if est else "❌ No encontrado.")
+                print(f" - Estudiante ID: {m[0]}, Curso: {m[1]}")
 
         elif opcion == "0":
-            print("👋 Saliendo del sistema...")
+            print(" Saliendo del sistema...")
             break
 
         else:
-            print("Opción no válida, intente nuevamente.")
+            print(" Opción no válida.")
 
 if __name__ == "__main__":
     main()
