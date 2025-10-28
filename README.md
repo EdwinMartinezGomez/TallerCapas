@@ -72,7 +72,7 @@ Sistema académico sencillo con separación de capas (presentación / negocio / 
 	- Todos los intentos de login (éxito/fracaso) se registran en la tabla `login_attempts` y en `auth.log`.
 	- `auth.log` se encuentra en la raíz del proyecto y contiene entradas con timestamp.
 
-## Arquitectura (modificada para autenticación)
+## Arquitectura 
 Representación simple de capas (ASCII):
 
 Presentation (CLI)
@@ -84,62 +84,3 @@ Business (AcademicManager)
 Data (Repository* / SQLite)
 
 - La capa de `Auth` actúa como puerta de entrada; la presentación solicita autenticación y delega operaciones autorizadas al `AcademicManager`.
-
-## Errores y solución rápida
-- ModuleNotFoundError al ejecutar `presentation/App.py` directamente:
-	- Ejecuta la app siempre desde la raíz con `python run.py` o con `python -m presentation.App`.
-- Si ves `AttributeError: 'AuthManager' object has no attribute 'login'`:
-	- Asegúrate de que el archivo `auth/AuthManager.py` contiene la implementación actual (con `login`).
-	- Ejecuta el test rápido para comprobar:
-		```cmd
-		python - <<EOF
-		from auth import AuthManager
-		a = AuthManager()
-		import inspect
-		print('has login:', hasattr(a, 'login'))
-		EOF
-		```
-	- Si muestra `False`, reinicia el intérprete (cierra/abre el terminal) para evitar módulos en caché y vuelve a ejecutar.
-
-## Pruebas y validación
-- `data/auth_test.py` realiza:
-	- Creación de admin si no existen usuarios.
-	- Login correcto y login con contraseña incorrecta.
-	- Muestra últimos registros de `login_attempts`.
-- Recomendación: después de cambios, ejecutar este script y correr manualmente `run.py` para validar flujo interactivo.
-
-## Buenas prácticas / mejoras sugeridas (siguientes pasos)
-- Añadir confirmación de contraseña y validación mínima (p. ej. 8+ caracteres) al registro.
-- Añadir bloqueo temporal tras N intentos fallidos (throttling) para endurecer seguridad.
-- Mover las comprobaciones de autorización a la capa de negocio si quieres doble protección (defensa en profundidad).
-- Añadir pruebas unitarias automáticas (pytest) que cubran:
-	- Registro de usuarios, login correcto/fallido, creación de estudiantes/cursos, reglas de rol.
-- Mejorar la UX del CLI (validaciones, mensajes más claros, menús).
-- Añadir migraciones (ej. usar Alembic/SQLAlchemy) si la BD crece en complejidad.
-
-## Contacto / notas finales
-- El proyecto ya incluye la mayoría de la infraestructura para autenticación segura y trazabilidad de intentos.
-- Si quieres, puedo:
-	- Añadir confirmación/validación de contraseñas en el flujo de registro.
-	- Implementar bloqueo por intentos fallidos y notificaciones.
-	- Convertir la persistencia a SQLAlchemy para migraciones y testing más robusto.
-	- Generar un diagrama gráfico (PNG/SVG) de la arquitectura y añadirlo al repo.
-
-¿Quieres que actualice ahora el `README.md` directamente en el repositorio con este contenido y/o que implemente alguna de las mejoras sugeridas (por ejemplo: confirmación de contraseña en el registro)?
-
-Instrucciones rápidas para la base de datos (SQLite)
-
-- El proyecto ahora usa SQLite para persistir estudiantes, cursos y matriculas.
-- El archivo de BD por defecto se crea en el directorio raíz con el nombre `tallercapas.db`.
-
-Inicializar y probar:
-
-1. Ejecuta la aplicación de presentación para crear la BD y probar el flujo:
-
-```bash
-python presentation\App.py
-```
-
-2. El primer uso crea las tablas automáticamente. Registra un estudiante, un curso y una matrícula para verificar.
-
-Si quieres usar una ruta de BD personalizada, puedes modificar los constructores de los repositorios para pasar `db_path`.
